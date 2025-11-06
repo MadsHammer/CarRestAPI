@@ -1,33 +1,32 @@
-using Microsoft.AspNetCore.Mvc;
 using CarLib;
 using CarLibRepository;
+using Microsoft.AspNetCore.Mvc;
 
-
-namespace CarRestAPI.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class CarController : ControllerBase
 {
-  
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CarController : ControllerBase
+    private readonly CarRepositoryList _repository;
+
+    public CarController(CarRepositoryList repository)
     {
-        private static CarRepositoryList _repository = new CarRepositoryList();
+        _repository = repository;
+    }
 
-        [HttpGet]
-        public IEnumerable<Car> Get()
+    [HttpGet]
+    public IEnumerable<Car> Get()
+    {
+        return _repository.GetAllCars();
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<Car> Get(int id)
+    {
+        var car = _repository.GetById(id);
+        if (car == null)
         {
-            return _repository.GetAllCars();
+            return NotFound();
         }
-
-        [HttpGet("{id}")]
-        public ActionResult<Car> Get(int id)
-        {
-            var car = _repository.GetById(id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-            return car;
-        }
-
+        return car;
     }
 }
