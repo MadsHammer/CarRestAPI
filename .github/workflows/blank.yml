@@ -38,9 +38,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 7️⃣ Deploy the build output to Azure Web App
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'CarRestAPI'           # Must match your Azure App Service name
+          app-name: 'CarRestAPI'  # your App Service name
+          publish-profile: ${{ secrets.CarRestAPI_PUBLISH_PROFILE }}
           package: ./publish_output
