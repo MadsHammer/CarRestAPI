@@ -29,6 +29,9 @@ jobs:
       - name: Build
         run: dotnet build CarRestAPI.sln --configuration Release --no-restore
 
+      - name: Run tests
+        run: dotnet test CarRestAPI.sln --no-build --verbosity normal
+
       - name: Publish
         run: dotnet publish CarRestAPI.sln -c Release -o ${{ env.PUBLISH_DIR }}
 
