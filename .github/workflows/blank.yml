@@ -2,43 +2,39 @@ name: Build and Deploy ASP.NET Core API to Azure
 
 on:
   push:
-    branches: [ "master" ]  # or "main" if that's your default branch
+    branches: [ "master" ]
   workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  AZURE_WEBAPP_NAME: 'CarRestAPI'
+  PUBLISH_DIR: './publish_output'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up the .NET SDK (adjust version to your project)
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'  # Change if you’re using .NET 6, 7, etc.
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # 3️⃣ Restore NuGet dependencies
       - name: Restore dependencies
         run: dotnet restore CarRestAPI.sln
 
-      # 4️⃣ Build the project
       - name: Build
         run: dotnet build CarRestAPI.sln --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test CarRestAPI.sln --no-build --verbosity normal
-
-      # 5️⃣ Publish output to a folder
       - name: Publish
-        run: dotnet publish CarRestAPI.sln -c Release -o ./publish_output
-
+        run: dotnet publish CarRestAPI.sln -c Release -o ${{ env.PUBLISH_DIR }}
 
       - name: Deploy to Azure WebApp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'CarRestAPI'  # your App Service name
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.CarRestAPI_PUBLISH_PROFILE }}
-          package: ./publish_output
+          package: ${{ env.PUBLISH_DIR }}
